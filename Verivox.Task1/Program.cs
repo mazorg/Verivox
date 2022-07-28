@@ -10,8 +10,9 @@ var app = builder.Build();
 app.MapGet("annualCosts/{consumption}",
     async (double consumption, IExternalServiceMock service, CancellationToken cancellationToken) =>
     {
+        if (consumption < 0) return Results.BadRequest("Consumption must be valid Positive number.");
         var products = await service.Get(cancellationToken);
-        return products.Select(p => new { p.TariffName, AnnualCosts = p.AnnualCosts(consumption) });
+        return Results.Ok(products.Select(p => new { p.TariffName, AnnualCosts = p.AnnualCosts(consumption) }));
     });
 
 app.Run();
